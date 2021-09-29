@@ -2,28 +2,22 @@
 {% block content %}
     <div class="row justify-content-center">
         <div class="col-lg-7">
-            <div class="alert alert-warning alert-dismissible fade show" role="alert"
-                 style="margin-top: 50px;">
-                <strong>Holy guacamole!</strong> You should check in on some of those fields below.
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+            {% if form.errors %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert"
+                     style="margin-top: 50px;">
+                    {#                <strong>Holy guacamole!</strong> You should check in on some of those fields below.#}
+                    {{ form.errors|escape }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endif %}
             <div class="card shadow-lg border-0 rounded-lg mt-5">
                 <div class="card-header"><h3 class="text-center font-weight-light my-4">Создать аккаунт</h3>
                 </div>
                 <div class="card-body">
                     <form action="{% url 'users:register' %}" method="post">
                         {% csrf_token %}
-                        {% if form.errors %}
-                            {% for field in form %}
-                                {% for error in field.errors %}
-                                    <div class="alert alert-danger">
-                                        <strong>{{ error|escape }}</strong>
-                                    </div>
-                                {% endfor %}
-                            {% endfor %}
-                        {% endif %}
                         <div class="form-row">
                             <div class="col-md-6">
                                 <div class="form-group">
