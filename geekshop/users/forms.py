@@ -49,8 +49,8 @@ class UserProfileForm(UserChangeForm):
             field.widget.attrs['class'] = 'form-control py-4'
         self.fields['avatar'].widget.attrs['class'] = 'custom-file-input'
 
-    def clean_avatar(self):
-        data = self.cleaned_data['avatar']
-        if data.size > 1024:
-            raise forms.ValidationError('Файл слишком большой')
-        return data
+    # def clean_avatar(self):
+    #     data = self.cleaned_data['avatar']
+    #     if data.size > 1024:
+    #         raise forms.ValidationError('Файл слишком большой')
+    #     return data
