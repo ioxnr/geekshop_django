@@ -12,7 +12,7 @@ def save_user_profile(backend, user, response, *args, **kwargs):
         return
 
     api_url = urlunparse(('https', 'api.vk.com', '/method/users.get', None, urlencode(
-        OrderedDict(fields=','.join(('bdate', 'sex', 'about', 'personal')), access_token=response['access_token'],
+        OrderedDict(fields=','.join(('bdate', 'sex', 'about')), access_token=response['access_token'],
                     v=5.131)), None))
 
     resp = requests.get(api_url)
@@ -40,10 +40,5 @@ def save_user_profile(backend, user, response, *args, **kwargs):
         if age < 18:
             user.delete()
             raise AuthForbidden('social_core.backends.vk.VKOAuth2')
-
-    if data['personal']:
-        print(data['personal'])
-        if data['personal']['langs']:
-            user.userprofile.languages = data['personal']['langs']
 
     user.save()
