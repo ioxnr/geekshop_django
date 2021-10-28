@@ -10,4 +10,25 @@ window.onload = function () {
         });
         event.preventDefault();
     });
+
+
+    $(document).on('click', '.product_add', (e) => {
+
+        let t_href = e.target;
+        let csrf = $('meta[name="csrf-token"]').attr('content');
+
+        $.ajax({
+            type: 'POST',
+            headers: {"X-CSRFToken": csrf},
+            url: '/baskets/add/' + t_href.name + '/',
+            success: (data) => {
+                if (data) {
+                    $('.product_items').html(data.result);
+                }
+            },
+        });
+
+        e.preventDefault();
+    });
+
 };
