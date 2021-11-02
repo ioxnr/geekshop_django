@@ -1,6 +1,6 @@
 from django.db import transaction
 from django.forms import inlineformset_factory
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
@@ -11,6 +11,7 @@ from baskets.models import Basket
 from geekshop.mixin import BaseClassContextMixin
 from orders.forms import OrderItemsForm
 from orders.models import Order, OrderItem
+from products.models import Product
 
 
 class OrderList(ListView):
@@ -122,3 +123,12 @@ def order_forming_complete(request, pk):
     order.save()
 
     return HttpResponseRedirect(reverse('orders:list'))
+
+
+def get_product_price(request, pk):
+    if request.is_ajax():
+        product = Product.objects.get(pk=pk)
+        if product:
+            return JsonResponse({'price': product.price})
+
+    return JsonResponse({'price': 0})
