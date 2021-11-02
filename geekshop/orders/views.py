@@ -132,3 +132,13 @@ def get_product_price(request, pk):
             return JsonResponse({'price': product.price})
 
     return JsonResponse({'price': 0})
+
+
+def payment_result(request):
+    status = request.GET.get('ik_inv_st')
+    if status == 'success':
+        order_pk = request.GET.get('ik_pm_no')
+        order_item = Order.objects.get(pk=order_pk)
+        order_item.status = Order.PAID
+        order_item.save()
+    return HttpResponseRedirect(reverse('orders:list'))

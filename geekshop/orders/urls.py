@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from .views import OrderCreate, OrderUpdate, OrderList, OrderDelete, OrderDetail, order_forming_complete, \
-    get_product_price
+    get_product_price, payment_result
 
 app_name = 'orders'
 
@@ -28,4 +28,5 @@ urlpatterns = [
     path('read/<int:pk>/', OrderDetail.as_view(), name='read'),
     path('forming_complete/<int:pk>/', order_forming_complete, name='forming_complete'),
     path('product/<int:pk>/price/', get_product_price, name='product_price'),
+    path('payment/result/', payment_result, name='payment_result'),
 ]
