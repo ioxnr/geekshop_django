@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import Login, RegisterView, ProfileFormView, Logout, verify
+from .views import Login, RegisterView, ProfileFormView, Logout
 
 app_name = 'users'
 
@@ -25,5 +25,5 @@ urlpatterns = [
     path('profile/', ProfileFormView.as_view(), name='profile'),
     path('logout/', Logout.as_view(), name='logout'),
 
-    path('verify/<str:email>/<str:activation_key>/', verify, name='verify'),
+    path('verify/<str:email>/<str:activation_key>/', RegisterView.verify, name='verify'),
 ]
