@@ -12,7 +12,7 @@ window.onload = function () {
     });
 
 
-    $(document).on('click', '.product_add', (e) => {
+     $('.product_add').on('click','button[type="button"]', (e) => {
 
         let t_href = e.target;
         let csrf = $('meta[name="csrf-token"]').attr('content');
