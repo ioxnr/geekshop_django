@@ -1,5 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db import connection
+from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponseRedirect, get_object_or_404, redirect
 from django.template.loader import render_to_string
@@ -32,8 +34,12 @@ class BasketCreateView(CreateView, UserDispatchMixin):
                     Basket.objects.create(user=request.user, product=product, quantity=1)
                 else:
                     basket = baskets.first()
-                    basket.quantity += 1
+                    # basket.quantity += 1
+                    basket.quantity += F('quantity') + 1
                     basket.save()
+
+                    update_queries = list(filter(lambda x: 'UPDATE' in x['sql'], connection.queries))
+                    print(f'basket_add {update_queries}')
 
         category_id = None
         page_id = 1
@@ -76,9 +82,6 @@ class BasketUpdateView(UpdateView, UserDispatchMixin):
     success_url = reverse_lazy('users:profile')
     pk_url_kwarg = 'basket_id'
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def get_context_data(self, *args, **kwargs):
         context = super(BasketUpdateView, self).get_context_data(**kwargs)
         context['baskets'] = Basket.objects.filter(user=self.request.user)
@@ -104,7 +107,6 @@ class BasketUpdateView(UpdateView, UserDispatchMixin):
 
         return redirect(self.success_url)
 
-
 # @login_required
 # def basket_add(request, product_id):
 #     user = request.user
@@ -115,7 +117,11 @@ class BasketUpdateView(UpdateView, UserDispatchMixin):
 #     else:
 #         basket = baskets.first()
 #         basket.quantity += 1
+#         basket.quantity += F('quantity') + 1
 #         basket.save()
+#
+#         update_queries = list(filter(lambda x: 'UPDATE' in x['sql'], connection.queries))
+#         print(f' basket_add {update_queries}')
 #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 # @login_required
