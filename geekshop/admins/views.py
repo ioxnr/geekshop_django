@@ -1,3 +1,6 @@
+from django.db import connection
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 
@@ -52,7 +55,7 @@ class UserUpdateView(UpdateView, CustomDispatchMixin):
 
 class UserDeleteView(DeleteView, CustomDispatchMixin):
     model = User
-    template_name = 'admins/admin-users-read.html'
+    template_name = 'admins/admin-users-update-delete.html'
     success_url = reverse_lazy('admins:admins_user')
 
     def delete(self, request, *args, **kwargs):
@@ -103,9 +106,16 @@ class CategoryDeleteView(DeleteView, CustomDispatchMixin):
     template_name = 'admins/admin-categories-update-delete.html'
     success_url = reverse_lazy('admins:admins_category')
 
+    # def delete(self, request, *args, **kwargs):
+    #     self.object = self.get_object()
+    #     self.object.delete()
+    #     return HttpResponseRedirect(self.get_success_url())
+
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
-        self.object.delete()
+        self.object.product_set.update(is_active=False)
+        self.object.is_active = False
+        self.object.save()
         return HttpResponseRedirect(self.get_success_url())
 
 
@@ -150,7 +160,30 @@ class ProductDeleteView(DeleteView, CustomDispatchMixin):
     template_name = 'admins/admin-product-update-delete.html'
     success_url = reverse_lazy('admins:admins_product')
 
+    # def delete(self, request, *args, **kwargs):
+    #     self.object = self.get_object()
+    #     self.object.delete()
+    #     return HttpResponseRedirect(self.get_success_url())
+
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
-        self.object.delete()
+        self.object.is_active = False
+        self.object.save()
         return HttpResponseRedirect(self.get_success_url())
+
+
+def db_profile_by_type(prefix, type, queries):
+    update_queries = list(filter(lambda x: type in x['sql'], queries))
+    print(f'db_profile {type} for {prefix}:')
+    [print(query['sql']) for query in update_queries]
+
+
+@receiver(pre_save, sender=ProductCategory)
+def product_is_active_update_product_category_save(sender, instance, **kwargs):
+    if instance.pk:
+        if instance.is_active:
+            instance.product_set.update(is_active=True)
+        else:
+            instance.product_set.update(is_active=False)
+
+        db_profile_by_type(sender, 'UPDATE', connection.queries)
