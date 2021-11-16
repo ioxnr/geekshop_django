@@ -21,9 +21,6 @@ class BasketCreateView(CreateView, UserDispatchMixin):
     template_name = 'products/products.html'
     success_url = reverse_lazy('products:index')
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def post(self, request, *args, **kwargs):
         if 'product_id' in self.kwargs:
             product_id = self.kwargs['product_id']
@@ -50,7 +47,8 @@ class BasketCreateView(CreateView, UserDispatchMixin):
         if 'page_id' in self.kwargs:
             page_id = self.kwargs['page_id']
 
-        products = Product.objects.filter(category_id=category_id) if category_id is not None else Product.objects.all()
+        products = Product.objects.filter(category_id=category_id).order_by(
+            'id') if category_id is not None else Product.objects.all().order_by('id')
 
         paginator = Paginator(products, per_page=3)
 
