@@ -68,7 +68,6 @@ class ProductListView(ListView):
         context = super(ProductListView, self).get_context_data(**kwargs)
         context['title'] = 'Каталог'
         context['categories'] = get_category_links()
-
         category_id = None
         page_id = 1
 
@@ -78,8 +77,8 @@ class ProductListView(ListView):
         if 'page_id' in self.kwargs:
             page_id = self.kwargs['page_id']
 
-        products = Product.objects.filter(category_id=category_id).select_related('category') \
-            if category_id is not None else Product.objects.all().select_related('category')
+        products = Product.objects.filter(category_id=category_id).select_related('category').order_by('id') \
+            if category_id is not None else Product.objects.all().select_related('category').order_by('id')
 
         paginator = Paginator(products, per_page=3)
 

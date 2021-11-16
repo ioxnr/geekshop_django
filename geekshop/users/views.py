@@ -21,6 +21,13 @@ class Login(LoginView, BaseClassContextMixin):
     template_name = 'users/login.html'
     form_class = UserLoginForm
     title = 'Авторизация'
+    success_url = 'index'
+
+    def get(self, request, *args, **kwargs):
+        sup = super(Login, self).get(request, *args, **kwargs)
+        if request.user.is_authenticated:
+            return HttpResponseRedirect(reverse_lazy(self.success_url))
+        return sup
 
 
 # def login(request):

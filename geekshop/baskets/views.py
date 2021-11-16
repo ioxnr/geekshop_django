@@ -32,20 +32,21 @@ class BasketCreateView(CreateView, UserDispatchMixin):
                 else:
                     basket = baskets.first()
                     # basket.quantity += 1
-                    basket.quantity += F('quantity') + 1
+                    basket.quantity = F('quantity') + 1
                     basket.save()
 
                     update_queries = list(filter(lambda x: 'UPDATE' in x['sql'], connection.queries))
                     print(f'basket_add {update_queries}')
 
         category_id = None
-        page_id = 1
 
         if 'category_id' in self.kwargs:
             category_id = self.kwargs['category_id']
 
-        if 'page_id' in self.kwargs:
-            page_id = self.kwargs['page_id']
+        page_id = 1
+
+        if request.POST.get('page_id'):
+            page_id = int(request.POST.get('page_id'))
 
         products = Product.objects.filter(category_id=category_id).order_by(
             'id') if category_id is not None else Product.objects.all().order_by('id')

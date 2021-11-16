@@ -16,11 +16,13 @@ $(document).on('click', '.product_add', (e) => {
 
     let t_href = e.target;
     let csrf = $('meta[name="csrf-token"]').attr('content');
+    let page_id = t_href.value;
 
     $.ajax({
         type: 'POST',
         headers: {"X-CSRFToken": csrf},
         url: '/baskets/add/' + t_href.name + '/',
+        data: {'page_id': page_id},
         success: (data) => {
             if (data) {
                 $('.product_items').html(data.result);
